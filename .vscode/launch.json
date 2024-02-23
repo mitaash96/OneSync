@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File (Enhanced)",
+            "type": "debugpy",  // Use "python" for standard debugging
+            "request": "launch",
+            "module": "src.${fileBasenameNoExtension}",
+            "env": {
+                "name": "onesync"  // Reference your active conda environment
+            },
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            //"stopOnEntry": true,  // Optional: Set breakpoints before starting
+            "justMyCode": true
+        }
+    ]
+}
