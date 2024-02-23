@@ -30,10 +30,13 @@ def encrypt_value(value, password):
 def decrypt_value(encrypted_value, password):
     salt = encrypted_value[:16]
     encrypted_data = encrypted_value[16:]
-    key = derive_key(password, salt)
-    cipher_suite = Fernet(key)
-    decrypted_value = cipher_suite.decrypt(encrypted_data)
-    return decrypted_value.decode()
+    try:
+        key = derive_key(password, salt)
+        cipher_suite = Fernet(key)
+        decrypted_value = cipher_suite.decrypt(encrypted_data)
+        return decrypted_value.decode()
+    except:
+        return None
 
 
 def save_to_config(config_file_path, api_token, vault_path, password):
@@ -89,7 +92,12 @@ def check_integrity():
         api_token_decrypted = decrypt_value(api_token_encrypted, password)
         vault_path_decrypted = decrypt_value(vault_path_encrypted, password)
 
-        return {'token': api_token_decrypted,'vault_path': vault_path_decrypted}
+        if api_token_decrypted is None or vault_path_decrypted is None:
+            print('incorrect password')
+            return None
+        
+        else:
+            return {'token': api_token_decrypted,'vault_path': vault_path_decrypted}
     
 
 if __name__ == '__main__':

@@ -44,3 +44,5 @@ class Driver():
         self.createNotes()
         self.updateNotes()
         self.archivalProcess()
+
+        return True

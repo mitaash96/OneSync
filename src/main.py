@@ -8,4 +8,7 @@ if __name__ == '__main__':
 
     if integrity_pld is not None:
         driver = Driver(**integrity_pld)
-        driver.execute()
+        result = driver.execute()
+        
+        if result:
+            print('='*10, 'execution complete' , '='*10)

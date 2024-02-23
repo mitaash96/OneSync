@@ -1,6 +1,6 @@
 call activate onesync
 
-cd D:\OneSync
+rem cd D:\OneSync
 
 python -m src.main
 
