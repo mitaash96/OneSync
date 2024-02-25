@@ -74,3 +74,6 @@ def create_notes():
         print("no new notes")
 
 
+if __name__ == '__main__':
+    df = pl.read_parquet('src/data/all_tasks')
+    pass
