@@ -105,8 +105,8 @@ def task_miner(token):
     hist = pl.read_parquet('src/data/completed_tasks_history')
     ts_max_complete = hist['completed_at'].max().strftime(time_format_fetch)
     # ts_max_complete = "2023-01-01T00:00:00"
-
     print(f"Existing max completion for tasks: {ts_max_complete}")
+    ts_max_complete = hist.with_columns(pl.col('completed_at')-pl.duration(hours=5, minutes=30))['completed_at'].max().strftime(time_format_fetch)
 
     completed_tasks = fetch_complete(ts_max_complete, user_tk, api)
 

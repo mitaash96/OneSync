@@ -90,7 +90,17 @@ def sync_archive(vault_path):
 
     archive_path = f"{vault_path}\\archive.zip"
 
+    to_archive = archival_process(outlinks, notes)
+
+    if to_archive.shape[0]>0:
+        add_files_to_zip(archive_path, to_archive['file'].to_list())
+    
+    
+
     if os.path.exists(archive_path):
+        with zipfile.ZipFile(archive_path, 'r') as zipf:
+            arch_phys = zipf.namelist()
+        
         restore_notes = retrieval_process(outlinks, archived_notes)
         if restore_notes.shape[0]>0:
             print(f"Number of notes being restored: {restore_notes.shape[0]}")
@@ -99,16 +109,14 @@ def sync_archive(vault_path):
                     zip(restore_notes['file'].to_list(), restore_notes['dir_path'].to_list())
                     )
                 )
-
-    to_archive = archival_process(outlinks, notes)
-
-    if to_archive.shape[0]>0:
-        add_files_to_zip(archive_path, to_archive['file'].to_list())
+        with open(f"{vault_path}\\Archived Notes.md", "w") as arch_note:
+            arch_note.write('\n'.join([f"{i+1}. [[{note.replace('.md', '')}]]" for i,note in enumerate(arch_phys)]))
     
     archived_notes = archival_log_snapshot(arch_new=to_archive, arch_old=archived_notes, archive_path=archive_path)
 
     print(f"{archived_notes.shape[0]} notes in archive")
     archived_notes.write_parquet('src/data/archived_notes')
+
 
 
 if __name__ == '__main__':
