@@ -75,6 +75,10 @@ def archival_log_snapshot(arch_new, arch_old, archive_path=None):
         with zipfile.ZipFile(archive_path, 'r') as zipf:
             arch_phys = zipf.namelist()
             arch = arch.filter(pl.col('fname').is_in(list(map(lambda x: x.replace('.md', ''), arch_phys))))
+    else:
+        for col in arch:
+            arch = arch.with_columns(pl.lit(None).cast(arch[col].dtype))
+        arch = arch.filter(pl.col('fname').is_not_null())
     
     return arch
 
