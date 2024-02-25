@@ -1,7 +1,9 @@
+*.txt
 src/data/*
 src/demised/*
 src/__pycache__/*
 src/notebooks/*
 src/__pycache__/*
+src/test/*
 *.ini
 *.drawio

@@ -2,23 +2,23 @@ from .taskminer import task_miner
 from .createnotes import create_notes
 from .updatenotes import update_notes
 from .noteminer import mine_notes
-from .archival import archival_process
+from .archival import sync_archive
 
 class Driver():
 
     def __init__(self, **kwargs) -> None:
         self.tk = kwargs['token']
         self.vpath = kwargs['vault_path']
-    
+
     def mineNotes(self):
         mine_notes(self.vpath)
 
     def _build_step(func):
         def wrapper(self, *args, **kwargs):
-            print('-'*10, f"starting execution of {func.__name__}", '-'*10, '\n')
+            print('\n', '-'*10, f"starting execution of {func.__name__}", '-'*10, '\n')
             result = func(self, *args, **kwargs)
             self.mineNotes()
-            print('-'*10, f"completed execution of {func.__name__}", '-'*10, '\n')
+            print('\n', '-'*10, f"completed execution of {func.__name__}", '-'*10, '\n')
             return result
         return wrapper
 
@@ -35,14 +35,14 @@ class Driver():
         update_notes()
 
     @_build_step
-    def archivalProcess(self):
-        archival_process(self.vpath)
+    def syncArchive(self):
+        sync_archive(self.vpath)
 
 
     def execute(self):
         self.mineTasks()
         self.createNotes()
         self.updateNotes()
-        self.archivalProcess()
+        self.syncArchive()
 
         return True
