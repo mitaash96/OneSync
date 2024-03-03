@@ -119,13 +119,28 @@ def mine_notes(directory):
             pl.col('mtime').str.to_datetime("%Y-%m-%d %H:%M:%S")
             )\
         .explode('ids')
+    
+    # Deleted Notes Section
+    if os.path.exists('src/data/notes'):
+        notes_history = pl.read_parquet('src/data/notes')
+        deleted_notes = notes_history.filter(~(pl.col('ids').is_in(table['ids'])))
+
+        if os.path.exists('src/data/deleted_notes'):
+            deleted_notes = deleted_notes.vstack(pl.read_parquet('src/data/deleted_notes'))\
+                .with_columns(pl.lit(1).alias('rn'))\
+                .with_columns(pl.col('rn').cum_count().over('ids'))\
+                .filter(pl.col('rn')==1)\
+                .drop('rn')
+        
+        deleted_notes.write_parquet('src/data/deleted_notes')
+
 
     table.write_parquet('src/data/notes')
     print('Vault structure snapshot completed')
 
 
 if __name__ == '__main__':
-    extract_outlinks(r"C:\Users\paulm\OneDrive\OneVault\+ journal\The Plan - 27.md")
+    mine_notes(input("Enter Vault Path: "))
 
 
 
