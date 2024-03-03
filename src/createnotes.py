@@ -55,11 +55,17 @@ def create_notes():
     obsidian = pl.read_parquet('src/data/notes')
     folders = pl.read_parquet('src/data/vault_folders')
     archive = pl.read_parquet('src/data/archived_notes')
+    deleted = pl.read_parquet('src/data/deleted_notes')
 
     base = todoist.filter(pl.col('parent_id').is_null()).select('id', 'content', 'created_at', 'labels', 'url')\
         .join(obsidian, left_on='id', right_on='ids', how='outer')
 
-    t2o = base.filter(pl.col('title').is_null()&(~pl.col('id').is_in(archive['todoist_id'])))
+    t2o = base\
+        .filter(
+            pl.col('title').is_null()
+            &(~pl.col('id').is_in(archive['todoist_id']))
+            &(~pl.col('id').is_in(deleted['ids']))
+            )
 
     t2o = t2o\
         .sort('content', 'created_at', descending=[False, False])\
